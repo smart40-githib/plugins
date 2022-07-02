@@ -180,12 +180,14 @@ public class ImagePickerPlugin
   static final String METHOD_CALL_IMAGE = "pickImage";
   static final String METHOD_CALL_MULTI_IMAGE = "pickMultiImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
+  static final String METHOD_CALL_AUDIO = "pickAudio";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
   private static final int CAMERA_DEVICE_REAR = 0;
   private static final String CHANNEL = "plugins.flutter.io/image_picker_android";
 
   private static final int SOURCE_CAMERA = 0;
+  private static final int SOURCE_MICROPHONE = 0;
   private static final int SOURCE_GALLERY = 1;
 
   private FlutterPluginBinding pluginBinding;
@@ -339,7 +341,7 @@ public class ImagePickerPlugin
       return;
     }
     MethodChannel.Result result = new MethodResultWrapper(rawResult);
-    int imageSource;
+    int source;
     ImagePickerDelegate delegate = activityState.getDelegate();
     if (call.argument("cameraDevice") != null) {
       CameraDevice device;
@@ -353,8 +355,8 @@ public class ImagePickerPlugin
     }
     switch (call.method) {
       case METHOD_CALL_IMAGE:
-        imageSource = call.argument("source");
-        switch (imageSource) {
+        source = call.argument("source");
+        switch (source) {
           case SOURCE_GALLERY:
             delegate.chooseImageFromGallery(call, result);
             break;
@@ -362,15 +364,15 @@ public class ImagePickerPlugin
             delegate.takeImageWithCamera(call, result);
             break;
           default:
-            throw new IllegalArgumentException("Invalid image source: " + imageSource);
+            throw new IllegalArgumentException("Invalid image source: " + source);
         }
         break;
       case METHOD_CALL_MULTI_IMAGE:
         delegate.chooseMultiImageFromGallery(call, result);
         break;
       case METHOD_CALL_VIDEO:
-        imageSource = call.argument("source");
-        switch (imageSource) {
+        source = call.argument("source");
+        switch (source) {
           case SOURCE_GALLERY:
             delegate.chooseVideoFromGallery(call, result);
             break;
@@ -378,7 +380,18 @@ public class ImagePickerPlugin
             delegate.takeVideoWithCamera(call, result);
             break;
           default:
-            throw new IllegalArgumentException("Invalid video source: " + imageSource);
+            throw new IllegalArgumentException("Invalid video source: " + source);
+        case METHOD_CALL_AUDIO:
+          source = call.argument("source");
+          switch (source) {
+            case SOURCE_GALLERY:
+              delegate.chooseAudioFromGallery(call, result);
+              break;
+            case SOURCE_MICROPHONE:
+              delegate.recordAudio(call, result);
+              break;
+            default:
+              throw new IllegalArgumentException("Invalid video source: " + source);
         }
         break;
       case METHOD_CALL_RETRIEVE:

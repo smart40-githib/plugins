@@ -358,6 +358,15 @@ public class ImagePickerDelegate
     launchMultiPickImageFromGalleryIntent();
   }
 
+  public void chooseAudioFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError(result);
+      return;
+    }
+
+    launchPickAudioFromGalleryIntent();
+  }
+
   private void launchPickImageFromGalleryIntent() {
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
