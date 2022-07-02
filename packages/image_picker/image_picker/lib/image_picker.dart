@@ -11,6 +11,7 @@ export 'package:image_picker_platform_interface/image_picker_platform_interface.
         kTypeImage,
         kTypeVideo,
         ImageSource,
+        AudioSource,
         CameraDevice,
         LostData,
         LostDataResponse,
