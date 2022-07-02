@@ -381,17 +381,19 @@ public class ImagePickerPlugin
             break;
           default:
             throw new IllegalArgumentException("Invalid video source: " + source);
-        case METHOD_CALL_AUDIO:
-          source = call.argument("source");
-          switch (source) {
-            case SOURCE_GALLERY:
-              delegate.chooseAudioFromGallery(call, result);
-              break;
-            case SOURCE_MICROPHONE:
-              delegate.recordAudio(call, result);
-              break;
-            default:
-              throw new IllegalArgumentException("Invalid video source: " + source);
+        }
+        break;
+      case METHOD_CALL_AUDIO:
+        source = call.argument("source");
+        switch (source) {
+          case SOURCE_GALLERY:
+            delegate.chooseAudioFromGallery(call, result);
+            break;
+          case SOURCE_MICROPHONE:
+            delegate.recordAudio(call, result);
+            break;
+          default:
+            throw new IllegalArgumentException("Invalid video source: " + source);
         }
         break;
       case METHOD_CALL_RETRIEVE:
