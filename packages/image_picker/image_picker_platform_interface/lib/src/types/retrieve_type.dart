@@ -8,5 +8,8 @@ enum RetrieveType {
   image,
 
   /// A video. See [ImagePicker.pickVideo].
-  video
+  video,
+
+  /// Audio. See [ImagePicker.pickAudio].
+  audio
 }

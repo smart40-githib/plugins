@@ -238,6 +238,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getVideo() has not been implemented.');
   }
 
+  /// Returns a [XFile] containing the audio that was picked.
   Future<XFile?> getAudio({
     required AudioSource source,
   }) {

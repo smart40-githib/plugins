@@ -14,3 +14,6 @@ const String kTypeImage = 'image';
 
 /// Denotes that a video is being picked.
 const String kTypeVideo = 'video';
+
+/// Denotes that audio is being picked.
+const String kTypeAudio = 'audio';
