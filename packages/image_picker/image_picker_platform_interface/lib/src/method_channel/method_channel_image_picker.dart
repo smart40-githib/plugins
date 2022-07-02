@@ -155,7 +155,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   Future<String?> _getAudioPath({
-    required ImageSource source,
+    required AudioSource source,
   }) {
     return _channel.invokeMethod<String>(
       'pickVideo',
