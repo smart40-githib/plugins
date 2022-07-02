@@ -9,6 +9,8 @@ import 'package:image_picker_platform_interface/src/method_channel/method_channe
 import 'package:image_picker_platform_interface/src/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../types/audio_source.dart';
+
 /// The interface that implementations of image_picker must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `image_picker`
