@@ -82,6 +82,7 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_AUDIO_FROM_GALLERY = 2362;
+  @VisibleForTesting static final int REQUEST_CODE_RECORD_AUDIO = 2363;
   @VisibleForTesting static final int REQUEST_RECORD_AUDIO_PERMISSION = 2365;
 
   @VisibleForTesting final String fileProviderName;
@@ -536,7 +537,9 @@ public class ImagePickerDelegate
       case REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA:
         handleCaptureVideoResult(resultCode);
         break;
-      default:
+      case REQUEST_CODE_RECORD_AUDIO:
+        handleRecordAudioResult(resultCode);
+        break;      default:
         return false;
     }
 
@@ -621,6 +624,25 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
+  private void handleRecordAudioResult(int resultCode) {
+    if (resultCode == Activity.RESULT_OK) {
+      fileUriResolver.getFullImagePath(
+              pendingAudioMediaUri != null
+                      ? pendingAudioMediaUri
+                      : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
+              new OnPathReadyListener() {
+                @Override
+                public void onPathReady(String path) {
+                  handleAudioResult(path);
+                }
+              });
+      return;
+    }
+
+    // User cancelled taking a picture.
+    finishWithSuccess(null);
+  }
+
   private void handleMultiImageResult(
       ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
@@ -664,6 +686,10 @@ public class ImagePickerDelegate
   }
 
   private void handleVideoResult(String path) {
+    finishWithSuccess(path);
+  }
+
+  private void handleAudioResult(String path) {
     finishWithSuccess(path);
   }
 
