@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export 'audio_source.dart';
 export 'camera_device.dart';
 export 'image_picker_options.dart';
 export 'image_source.dart';
