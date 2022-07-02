@@ -22,10 +22,19 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  image_picker_android: ^0.8.4+11
+
+  image_picker_android:
+    git:
+      url: https://github.com/smart40-githib/plugins
+      path: packages/image_picker/image_picker_android
+
   image_picker_for_web: ^2.1.0
   image_picker_ios: ^0.8.4+11
-  image_picker_platform_interface: ^2.3.0
+
+  image_picker_platform_interface:
+    git:
+      url: https://github.com/smart40-githib/plugins
+      path: packages/image_picker/image_picker_platform_interface
 
 dev_dependencies:
   build_runner: ^2.1.10
@@ -34,3 +43,4 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.0.0
   plugin_platform_interface: ^2.0.0
+
