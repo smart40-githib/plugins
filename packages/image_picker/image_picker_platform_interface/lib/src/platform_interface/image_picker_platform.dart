@@ -9,8 +9,6 @@ import 'package:image_picker_platform_interface/src/method_channel/method_channe
 import 'package:image_picker_platform_interface/src/types/types.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../types/audio_source.dart';
-
 /// The interface that implementations of image_picker must implement.
 ///
 /// Platform implementations should extend this class rather than implement it as `image_picker`
@@ -128,6 +126,13 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     Duration? maxDuration,
   }) {
     throw UnimplementedError('pickVideo() has not been implemented.');
+  }
+
+  /// Returns a [PickedFile] containing the audio that was picked.
+  Future<PickedFile?> pickAudio({
+    required AudioSource source
+  }) {
+    throw UnimplementedError('pickAudio() has not been implemented.');
   }
 
   /// Retrieves any previously picked file, that was lost due to the MainActivity being destroyed.

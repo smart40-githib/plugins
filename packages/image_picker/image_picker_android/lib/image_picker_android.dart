@@ -150,6 +150,16 @@ class ImagePickerAndroid extends ImagePickerPlatform {
     );
   }
 
+  Future<String?> _getAudioPath({
+    required AudioSource source
+  }) {
+    return _channel.invokeMethod<String>(
+      'pickAudio',
+      <String, dynamic>{
+        'source': source.index,
+      },
+    );
+  }
   @override
   Future<XFile?> getImage({
     required ImageSource source,
@@ -212,6 +222,16 @@ class ImagePickerAndroid extends ImagePickerPlatform {
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,
+    );
+    return path != null ? XFile(path) : null;
+  }
+
+  @override
+  Future<XFile?> getAudio({
+    required AudioSource source,
+  }) async {
+    final String? path = await _getAudioPath(
+      source: source
     );
     return path != null ? XFile(path) : null;
   }

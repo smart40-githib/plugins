@@ -145,6 +145,27 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
+  Future<PickedFile?> pickAudio({
+    required AudioSource source,
+  }) async {
+    final String? path = await _getAudioPath(
+      source: source,
+    );
+    return path != null ? PickedFile(path) : null;
+  }
+
+  Future<String?> _getAudioPath({
+    required ImageSource source,
+  }) {
+    return _channel.invokeMethod<String>(
+      'pickVideo',
+      <String, dynamic>{
+        'source': source.index,
+      },
+    );
+  }
+
+  @override
   Future<LostData> retrieveLostData() async {
     final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');
