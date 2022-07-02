@@ -236,6 +236,12 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getVideo() has not been implemented.');
   }
 
+  Future<XFile?> getAudio({
+    required AudioSource source,
+  }) {
+    throw UnimplementedError('getImage() has not been implemented.');
+  }
+
   /// Retrieves any previously picked files, that were lost due to the MainActivity being destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is

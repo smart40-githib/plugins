@@ -308,6 +308,14 @@ class ImagePicker {
     );
   }
 
+  Future<XFile?> pickAudio({
+    required AudioSource source,
+  }) {
+    return platform.getAudio(
+      source: source,
+    );
+  }
+
   /// Retrieve the lost [XFile] when [pickImage], [pickMultiImage] or [pickVideo] failed because the MainActivity
   /// is destroyed. (Android only)
   ///

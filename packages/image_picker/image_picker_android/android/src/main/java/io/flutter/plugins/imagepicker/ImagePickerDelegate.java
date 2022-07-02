@@ -81,6 +81,8 @@ public class ImagePickerDelegate
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_AUDIO_FROM_GALLERY = 2362;
+  @VisibleForTesting static final int REQUEST_RECORD_AUDIO_PERMISSION = 2365;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -111,7 +113,7 @@ public class ImagePickerDelegate
     void onPathReady(String path);
   }
 
-  private Uri pendingCameraMediaUri;
+  private Uri pendingAudioMediaUri;
   private MethodChannel.Result pendingResult;
   private MethodCall methodCall;
 
@@ -210,8 +212,8 @@ public class ImagePickerDelegate
 
     cache.saveTypeWithMethodCallName(methodCall.method);
     cache.saveDimensionWithMethodCall(methodCall);
-    if (pendingCameraMediaUri != null) {
-      cache.savePendingCameraMediaUriPath(pendingCameraMediaUri);
+    if (pendingAudioMediaUri != null) {
+      cache.savePendingCameraMediaUriPath(pendingAudioMediaUri);
     }
   }
 
@@ -285,7 +287,7 @@ public class ImagePickerDelegate
     }
 
     File videoFile = createTemporaryWritableVideoFile();
-    pendingCameraMediaUri = Uri.parse("file:" + videoFile.getAbsolutePath());
+    pendingAudioMediaUri = Uri.parse("file:" + videoFile.getAbsolutePath());
 
     Uri videoUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, videoFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
@@ -302,6 +304,31 @@ public class ImagePickerDelegate
         exception.printStackTrace();
       }
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
+    }
+  }
+
+  private void launchRecordAudioIntent() {
+
+    Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+
+    File audioFile = createTemporaryWritableAudioFile();
+    pendingAudioMediaUri = Uri.parse("file:" + audioFile.getAbsolutePath());
+
+    Uri audioUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, audioFile);
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, audioUri);
+    grantUriPermissions(intent, audioUri);
+
+    try {
+      activity.startActivityForResult(intent, REQUEST_CODE_RECORD_AUDIO);
+    } catch (ActivityNotFoundException e) {
+      try {
+        // If we can't delete the file again here, there's not really anything we can do about it.
+        //noinspection ResultOfMethodCallIgnored
+        audioFile.delete();
+      } catch (SecurityException exception) {
+        exception.printStackTrace();
+      }
+      finishWithError("no_available_microphone", "Error recording audio.");
     }
   }
 
@@ -330,6 +357,13 @@ public class ImagePickerDelegate
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
+  private void launchPickAudioFromGalleryIntent() {
+    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    pickImageIntent.setType("audio/*");
+
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_AUDIO_FROM_GALLERY);
+  }
+
   private void launchMultiPickImageFromGalleryIntent() {
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -355,6 +389,24 @@ public class ImagePickerDelegate
     launchTakeImageWithCameraIntent();
   }
 
+  public void recordAudio(MethodCall methodCall, MethodChannel.Result result) {
+
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError(result);
+      return;
+    }
+
+    if (needRequestAudioPermission()
+            && !permissionManager.isPermissionGranted(Manifest.permission.RECORD_AUDIO)) {
+      permissionManager.askForPermission(
+              Manifest.permission.RECORD_AUDIO, REQUEST_CAMERA_IMAGE_PERMISSION);
+      return;
+    }
+
+    launchRecordAudioIntent();
+
+  }
+
   private boolean needRequestCameraPermission() {
     if (permissionManager == null) {
       return false;
@@ -369,7 +421,7 @@ public class ImagePickerDelegate
     }
 
     File imageFile = createTemporaryWritableImageFile();
-    pendingCameraMediaUri = Uri.parse("file:" + imageFile.getAbsolutePath());
+    pendingAudioMediaUri = Uri.parse("file:" + imageFile.getAbsolutePath());
 
     Uri imageUri = fileUriResolver.resolveFileProviderUriForFile(fileProviderName, imageFile);
     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -395,6 +447,10 @@ public class ImagePickerDelegate
 
   private File createTemporaryWritableVideoFile() {
     return createTemporaryWritableFile(".mp4");
+  }
+
+  private File createTemporaryWritableAudioFile() {
+    return createTemporaryWritableFile(".3gp");
   }
 
   private File createTemporaryWritableFile(String suffix) {
@@ -439,6 +495,11 @@ public class ImagePickerDelegate
       case REQUEST_CAMERA_VIDEO_PERMISSION:
         if (permissionGranted) {
           launchTakeVideoWithCameraIntent();
+        }
+        break;
+      case REQUEST_RECORD_AUDIO_PERMISSION:
+        if (permissionGranted) {
+          launchRecordAudioIntent();
         }
         break;
       default:
@@ -525,8 +586,8 @@ public class ImagePickerDelegate
   private void handleCaptureImageResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
+          pendingAudioMediaUri != null
+              ? pendingAudioMediaUri
               : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
@@ -544,8 +605,8 @@ public class ImagePickerDelegate
   private void handleCaptureVideoResult(int resultCode) {
     if (resultCode == Activity.RESULT_OK) {
       fileUriResolver.getFullImagePath(
-          pendingCameraMediaUri != null
-              ? pendingCameraMediaUri
+          pendingAudioMediaUri != null
+              ? pendingAudioMediaUri
               : Uri.parse(cache.retrievePendingCameraMediaUriPath()),
           new OnPathReadyListener() {
             @Override
