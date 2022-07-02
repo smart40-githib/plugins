@@ -40,4 +40,9 @@ final class ImagePickerUtils {
     boolean greatOrEqualM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     return greatOrEqualM && isPermissionPresentInManifest(context, Manifest.permission.CAMERA);
   }
+
+  static boolean needRequestAudioPermission(Context context) {
+    boolean greatOrEqualM = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    return greatOrEqualM && isPermissionPresentInManifest(context, Manifest.permission.RECORD_AUDIO);
+  }
 }

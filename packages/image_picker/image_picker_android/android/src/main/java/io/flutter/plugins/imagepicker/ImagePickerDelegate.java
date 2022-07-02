@@ -102,6 +102,8 @@ public class ImagePickerDelegate
     void askForPermission(String permissionName, int requestCode);
 
     boolean needRequestCameraPermission();
+
+    boolean needRequestAudioPermission();
   }
 
   interface FileUriResolver {
@@ -145,6 +147,11 @@ public class ImagePickerDelegate
           @Override
           public boolean needRequestCameraPermission() {
             return ImagePickerUtils.needRequestCameraPermission(activity);
+          }
+
+          @Override
+          public boolean needRequestAudioPermission() {
+            return ImagePickerUtils.needRequestAudioPermission(activity);
           }
         },
         new FileUriResolver() {
@@ -413,6 +420,13 @@ public class ImagePickerDelegate
       return false;
     }
     return permissionManager.needRequestCameraPermission();
+  }
+
+  private boolean needRequestAudioPermission() {
+    if (permissionManager == null) {
+      return false;
+    }
+    return permissionManager.needRequestAudioPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
